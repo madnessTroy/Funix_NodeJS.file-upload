@@ -2,9 +2,10 @@
 const express = require('express');
 // Mongoose
 const mongoose = require('mongoose');
-// Core
+// Core module
 const bodyParser = require('body-parser');
 const path = require('path');
+const session = require('express-session');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -19,6 +20,9 @@ app.set('views', 'views');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(
+	session({ secret: 'my secret', resave: false, saveUninitialized: false })
+);
 
 app.use((req, res, next) => {
 	User.findById('61e581c3c10d8245f7e46d29')
