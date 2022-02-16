@@ -13,30 +13,17 @@ var options = {
 var client = nodemailer.createTransport(sgTransport(options));
 
 exports.getLogin = (req, res) => {
-	let message = req.flash('error');
-	if (message) {
-		message = message[0];
-	} else {
-		message = null;
-	}
 	res.render('auth/login', {
 		pageTitle: 'Log In',
 		path: '/login',
-		errorMessage: message,
+		errorMessage: req.flash('error'),
 	});
 };
 
 exports.getSignup = (req, res, next) => {
-	let message = req.flash('error');
-	if (message) {
-		message = message[0];
-	} else {
-		message = null;
-	}
 	res.render('auth/signup', {
 		path: '/signup',
 		pageTitle: 'Signup',
-		errorMessage: message,
 	});
 };
 
@@ -47,7 +34,7 @@ exports.postLogin = (req, res) => {
 	User.findOne({ email })
 		.then((user) => {
 			if (!user) {
-				req.flash('error', 'Invalid email!');
+				req.flash('error', 'Invalid email or password!');
 				return res.redirect('/login');
 			}
 			bcrypt
@@ -60,7 +47,6 @@ exports.postLogin = (req, res) => {
 							res.redirect('/');
 						});
 					}
-					req.flash('error', 'Invalid password!');
 					return res.redirect('/login');
 				})
 				.catch((err) => {
@@ -81,14 +67,13 @@ exports.postSignup = (req, res, next) => {
 		return res.status(422).render('auth/signup', {
 			path: '/signup',
 			pageTitle: 'Signup',
-			errorMessage: errors.array(),
+			errorMessage: errors.array()[0].msg,
 		});
 	}
 
 	User.findOne({ email: email })
 		.then((userDoc) => {
 			if (userDoc) {
-				req.flash('error', 'Existed email!');
 				return res.redirect('/signup');
 			}
 			return bcrypt.hash(password, 12).then((hashedPassword) => {
