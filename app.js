@@ -18,7 +18,7 @@ const errorController = require('./controllers/error');
 const User = require('./models/user');
 
 const MONGODB_URI =
-	'mongodb+srv://admin:admin@funixlab-nodejs.n4ini.mongodb.net/shop';
+	'mongodb+srv://admin:admin@funixlab-nodejs.n4ini.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
 
 const app = express();
 const store = new MongoDBStore({
