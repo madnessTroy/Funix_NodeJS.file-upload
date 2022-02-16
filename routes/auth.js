@@ -13,8 +13,9 @@ router.get('/signup', authController.getSignup);
 router.post(
 	'/login',
 	[
-		body('email').isEmail().withMessage('Please enter a valid email!'),
+		body('email').isEmail().withMessage('Please enter a valid email!').normalizeEmail(),
 		body('password')
+			.trim()
 			.isLength({ min: 5 })
 			.withMessage(
 				'Please enter a password with only numbers and text || At least 5 characters'
@@ -38,19 +39,23 @@ router.post(
 						);
 					}
 				});
-			}),
+			})
+			.normalizeEmail(),
 		body(
 			'password',
 			'Please enter a password with only numbers and text || At least 5 characters'
 		)
+			.trim()
 			.isLength({ min: 5 })
 			.isAlphanumeric(),
-		body('confirmPassword').custom((value, { req }) => {
-			if (value !== req.body.password) {
-				throw new Error('Password is not match!');
-			}
-			return true;
-		}),
+		body('confirmPassword')
+			.trim()
+			.custom((value, { req }) => {
+				if (value !== req.body.password) {
+					throw new Error('Password is not match!');
+				}
+				return true;
+			}),
 	],
 	authController.postSignup
 );
