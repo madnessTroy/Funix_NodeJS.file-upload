@@ -73,20 +73,15 @@ exports.postSignup = (req, res, next) => {
 		});
 	}
 
-	User.findOne({ email: email })
-		.then((userDoc) => {
-			if (userDoc) {
-				req.flash('error', 'E-Mail exists already, please pick a different one.');
-				return res.redirect('/signup');
-			}
-			return bcrypt.hash(password, 12).then((hashedPassword) => {
-				const user = new User({
-					email,
-					password: hashedPassword,
-					cart: { items: [] },
-				});
-				return user.save();
+	bcrypt
+		.hash(password, 12)
+		.then((hashedPassword) => {
+			const user = new User({
+				email,
+				password: hashedPassword,
+				cart: { items: [] },
 			});
+			return user.save();
 		})
 		.then(() => {
 			res.redirect('/login');
