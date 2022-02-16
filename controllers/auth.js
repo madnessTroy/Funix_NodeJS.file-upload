@@ -1,16 +1,16 @@
 const bcrypt = require('bcryptjs');
-const nodemailer = require('nodemailer');
-const sgTransport = require('nodemailer-sendgrid-transport');
-const { validationResult } = require('express-validator/check');
+// const nodemailer = require('nodemailer');
+// const sgTransport = require('nodemailer-sendgrid-transport');
+const { validationResult } = require('express-validator');
 
 const User = require('../models/user');
 
-var options = {
-	auth: {
-		api_key: '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',
-	},
-};
-var client = nodemailer.createTransport(sgTransport(options));
+// var options = {
+// 	auth: {
+// 		api_key: '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',
+// 	},
+// };
+// var client = nodemailer.createTransport(sgTransport(options));
 
 exports.getLogin = (req, res) => {
 	res.render('auth/login', {
@@ -24,6 +24,7 @@ exports.getSignup = (req, res, next) => {
 	res.render('auth/signup', {
 		path: '/signup',
 		pageTitle: 'Signup',
+		errorMessage: req.flash('error'),
 	});
 };
 
@@ -64,6 +65,7 @@ exports.postSignup = (req, res, next) => {
 	// Validate form
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
+		console.log(errors.array()[0].msg);
 		return res.status(422).render('auth/signup', {
 			path: '/signup',
 			pageTitle: 'Signup',
@@ -87,14 +89,6 @@ exports.postSignup = (req, res, next) => {
 		})
 		.then(() => {
 			res.redirect('/login');
-			client
-				.sendMail({
-					to: email,
-					from: 'flyht18@gmail.com',
-					subject: 'Sign-up Succeded!',
-					html: '<h1>Complete</h1>',
-				})
-				.then(() => console.log('Email sent!'));
 		})
 		.catch((err) => {
 			console.log(err);
