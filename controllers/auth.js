@@ -13,24 +13,50 @@ const User = require('../models/user');
 // var client = nodemailer.createTransport(sgTransport(options));
 
 exports.getLogin = (req, res) => {
+	let message = req.flash('error');
+	if (message.length > 0) {
+		message = message[0];
+	} else {
+		message = null;
+	}
 	res.render('auth/login', {
 		pageTitle: 'Log In',
 		path: '/login',
-		errorMessage: req.flash('error'),
+		errorMessage: message,
 	});
 };
 
 exports.getSignup = (req, res, next) => {
+	let message = req.flash('error');
+	if (message.length > 0) {
+		message = message[0];
+	} else {
+		message = null;
+	}
 	res.render('auth/signup', {
 		path: '/signup',
 		pageTitle: 'Signup',
-		errorMessage: req.flash('error'),
+		errorMessage: message,
+		oldInput: {
+			email: '',
+			password: '',
+			confirmPassword: '',
+		},
 	});
 };
 
 exports.postLogin = (req, res) => {
 	const email = req.body.email;
 	const password = req.body.password;
+
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(422).render('auth/login', {
+			pageTitle: 'Log In',
+			path: '/login',
+			errorMessage: errors.array()[0].msg,
+		});
+	}
 
 	User.findOne({ email })
 		.then((user) => {
@@ -60,7 +86,6 @@ exports.postLogin = (req, res) => {
 exports.postSignup = (req, res, next) => {
 	const email = req.body.email;
 	const password = req.body.password;
-	const confirmPassword = req.body.confirmPassword;
 
 	// Validate form
 	const errors = validationResult(req);
@@ -70,6 +95,11 @@ exports.postSignup = (req, res, next) => {
 			path: '/signup',
 			pageTitle: 'Signup',
 			errorMessage: errors.array()[0].msg,
+			oldInput: {
+				email: email,
+				password: password,
+				confirmPassword: req.body.confirmPassword,
+			},
 		});
 	}
 
