@@ -125,15 +125,17 @@ exports.getOrders = (req, res, next) => {
 
 exports.getInvoice = (req, res, next) => {
 	const orderId = req.params.orderId;
-	const invoiceName = 'invoice-' + orderId + '.pdf';
+	const invoiceName = 'invoice-' + orderId + '.txt';
 	const invoicePath = path.join('data', 'invoices', invoiceName);
+	console.log(invoicePath);
 	fs.readFile(invoicePath, (data, err) => {
 		console.log(data);
 		if (err) {
 			console.log('toan');
 			return next(err);
 		}
+		// res.setHeader('Content-Type', 'application/pdf');
+		// res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
 		res.send(data);
-		console.log(data);
 	});
 };

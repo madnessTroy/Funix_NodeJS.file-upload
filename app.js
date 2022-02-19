@@ -18,8 +18,7 @@ const authRoutes = require('./routes/auth');
 const errorController = require('./controllers/error');
 const User = require('./models/user');
 
-const MONGODB_URI =
-	'mongodb+srv://admin:admin@funixlab-nodejs.n4ini.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+const MONGODB_URI = 'mongodb+srv://admin:admin@funixlab-nodejs.n4ini.mongodb.net/myFirstDatabase';
 
 const app = express();
 const store = new MongoDBStore({
